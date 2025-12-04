@@ -126,7 +126,16 @@ func runScheme(ctx context.Context, scheme string, cfg Config) (Result, error) {
 
 	baseDir := cfg.TempDir
 	if baseDir == "" {
-		baseDir = os.TempDir()
+		// 默认使用当前工作目录下的 tmp 目录
+		cwd, err := os.Getwd()
+		if err != nil {
+			return Result{}, fmt.Errorf("get current directory: %w", err)
+		}
+		baseDir = filepath.Join(cwd, "tmp")
+		// 确保 tmp 目录存在
+		if err := os.MkdirAll(baseDir, 0o755); err != nil {
+			return Result{}, fmt.Errorf("create tmp directory: %w", err)
+		}
 	}
 	tempDir, err := os.MkdirTemp(baseDir, fmt.Sprintf("uidstress-%s-", scheme))
 	if err != nil {
