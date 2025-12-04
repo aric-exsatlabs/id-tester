@@ -260,6 +260,8 @@ func generatorFor(name string) (func() string, error) {
 		return tools.GenerateULID, nil
 	case "ksuid":
 		return tools.GenerateKSUID, nil
+	case "customuid", "custom":
+		return tools.GenerateCustomUID, nil
 	default:
 		return nil, fmt.Errorf("unknown scheme %q", name)
 	}

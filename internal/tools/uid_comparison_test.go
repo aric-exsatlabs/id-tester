@@ -27,6 +27,11 @@ func TestUID_LengthComparison(t *testing.T) {
 			generate: func() string { return GenerateKSUID() },
 			wantLen:  27,
 		},
+		{
+			name:     "CustomUID",
+			generate: func() string { return GenerateCustomUID() },
+			wantLen:  16,
+		},
 	}
 
 	for _, tt := range tests {
@@ -64,6 +69,13 @@ func BenchmarkUID_Comparison(b *testing.B) {
 			GenerateKSUID()
 		}
 	})
+
+	b.Run("CustomUID", func(b *testing.B) {
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			GenerateCustomUID()
+		}
+	})
 }
 
 // BenchmarkUID_Parallel 并发性能测试
@@ -91,6 +103,14 @@ func BenchmarkUID_Parallel(b *testing.B) {
 			}
 		})
 	})
+
+	b.Run("CustomUID", func(b *testing.B) {
+		b.RunParallel(func(pb *testing.PB) {
+			for pb.Next() {
+				GenerateCustomUID()
+			}
+		})
+	})
 }
 
 // TestUID_Uniqueness_Comparison 对比测试，生成 1,000,000 个 ID 进行唯一性对比
@@ -112,6 +132,10 @@ func TestUID_Uniqueness_Comparison(t *testing.T) {
 		{
 			name:     "KSUID",
 			generate: func() string { return GenerateKSUID() },
+		},
+		{
+			name:     "CustomUID",
+			generate: func() string { return GenerateCustomUID() },
 		},
 	}
 
@@ -161,6 +185,10 @@ func TestUID_ConcurrentSafety(t *testing.T) {
 		{
 			name:     "KSUID",
 			generate: func() string { return GenerateKSUID() },
+		},
+		{
+			name:     "CustomUID",
+			generate: func() string { return GenerateCustomUID() },
 		},
 	}
 
